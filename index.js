@@ -6,6 +6,7 @@ import authRoute from './routes/auth.js';
 import userRoute from './routes/user.js';
 import gameRoute from './routes/game.js';
 import walletRoute from './routes/wallet.js';
+import adminRoute from './routes/admin.js';
 import participantsUserRoute from './routes/participantsUser.js';
 import gameResultRoute from './routes/gameResult.js';
 import cookieParser from 'cookie-parser';
@@ -26,6 +27,7 @@ app.use("/api/user",userRoute);
 app.use("/api/game",gameRoute);
 app.use("/api/gameResult",gameResultRoute);
 app.use("/api/wallet",walletRoute);
+app.use("/api/admin",adminRoute);
 
 
 // Response Handle Middleware

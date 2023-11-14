@@ -25,12 +25,22 @@ const UserSchema = mongoose.Schema(
             type: String,
             required: true
         },
+        emailStatus:{
+            type :String,
+            required:true,
+            default: "unverified"
+        },
         recommendationCode: {
             type: String,
         },
         privacyPolicy:{
             type:Boolean,
             required:true
+        },
+        userStatus:{
+            type:String,
+            required:true,
+            default:'active'
         },
         isAdmin: {
             type: Boolean,

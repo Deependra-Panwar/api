@@ -18,6 +18,7 @@ export const register = async (req,res,next)=>{
         password:hashpassword,
         mobileNumber:req.body.mobileNumber,
         privacyPolicy:req.body.privacyPolicy,
+        userStatus:req.body.userStatus,
         recommendationCode:req.body.recommendationCode,
         roles:role
     });
