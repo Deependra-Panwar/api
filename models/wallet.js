@@ -7,8 +7,12 @@ const transactionSchema =  mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['deposit', 'withdrawal', 'transfer'],
+        enum: ['deposit', 'withdrawal', 'gamePlay'],
         required: true
+    },
+    approved: {
+        type: Boolean,
+        default: false
     },
     date: {
         type: Date,
@@ -17,11 +21,6 @@ const transactionSchema =  mongoose.Schema({
 });
 
 const walletSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        required: true,
-        unique: true
-    },
     email: {
         type: String,
         required: true,

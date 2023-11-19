@@ -3,6 +3,7 @@ import Game from '../models/Game.js';
 import GameResult from '../models/gameResult.js';
 import { createError } from '../utills/error.js';
 import { createSuccess } from '../utills/success.js';
+import User from "../models/User.js";
 
 export const participantUser = async (req, res, next) => {
     const gameId = req.body.gameId;
@@ -12,7 +13,6 @@ export const participantUser = async (req, res, next) => {
         username: username,
         gameId: gameId,
     });
-    console.log(existingParticipantsUser)
     if (!existingParticipantsUser) {
         // No existing document found, so you can insert the new user
         const newParticipantsUser = new ParticipantsUser({
@@ -35,17 +35,43 @@ export const participantUser = async (req, res, next) => {
     }
 };
 
+export const getGameResult =async (req,res,next) =>{
+    try {
+        const gameData = await Game.find({});
+        return next(createSuccess(200,"Get all Data",gameData))
+    } catch (error) {
+        console.error("Error while fetching game data:", error);
+        return [];
+    }
+}
+export const getUserByemail = async(req, res,next) =>{
+    const {email} =req.params
+    console.log(email)
+    try{
+        const user = await User.findOne({email});
+        if(!user){
+            return next(createError(400, "User not Found!"));
+        }
+        return next(createSuccess(200,"Single User",user))
+    }catch(error){
+        console.log(error)
+        return next(createError(500, "Internal Server Error"));
+    }
+}
+
 export const getParticipantUserGroupedDataWithDetailsAndAmountPut = async (req, res, next) => {
     const gameId = req.params.gameId;
     const gameData = await getAllGameDataByGameId(gameId);
     const groupedData = await groupGameDataBySelection(gameData);
     const totalAmountBySelection = await calculateTotalAmountBySelection(gameId,groupedData);
- // const GameResultstatus = insertGameResultData(gameId,totalAmountBySelection);
+    const GameResultstatus = await insertGameResultData(gameId,totalAmountBySelection);
     const totalAmountcollectinAGame = sumAmountPutForAllSections(groupedData); 
     const gameEarning = calculateEarning(totalAmountBySelection,totalAmountcollectinAGame);
     const participantUsercount = gameData.length;
-   // const insertGameDatas=insertGameData(gameId,participantUsercount,totalAmountBySelection, totalAmountcollectinAGame,gameEarning)
-   // console.log('gameEarning',insertGameDatas)    
+    const insertGameDatas=insertGameData(gameId,participantUsercount,totalAmountBySelection, totalAmountcollectinAGame,gameEarning)
+    const AddWinningAmounts = AddWinningAmount(gameId,totalAmountBySelection)
+
+    return next(createSuccess(200, "All process done"));
 };
 
 export const getAllGameDataByGameId = async (gameId) => {
@@ -205,13 +231,22 @@ export const calculateEarning = (totalAmountBySelection, totalAmountcollectinAGa
 };
 
 const insertGameData = async (gameId, participantUsercount, totalAmountBySelection, totalAmountcollectinAGame,gameEarning) => {
+    let color = 'white';
     try {
+         if(totalAmountBySelection.winner==2 ||totalAmountBySelection.winner==4||totalAmountBySelection.winner==6||totalAmountBySelection.winner==8){
+                color='warn';
+         }else if(totalAmountBySelection.winner==1 ||totalAmountBySelection.winner==3 ||totalAmountBySelection.winner==7 ||totalAmountBySelection.winner==9 ){
+                color ="primary"
+         }else if(totalAmountBySelection.winner==0 || totalAmountBySelection.winner== 5 ){
+                color = "accent"
+         }
         const game = new Game({
             gameId: gameId,
             participantUsercount: participantUsercount,
             totalAomountCollect:totalAmountcollectinAGame,
             priceGiven: totalAmountBySelection.lowestAmount,
             colorWin: totalAmountBySelection.winner,
+            color:color,
             earning: gameEarning,
         });
 
@@ -221,6 +256,37 @@ const insertGameData = async (gameId, participantUsercount, totalAmountBySelecti
         console.error('Error while inserting game data:', error);
     }
 };
+
+export const AddWinningAmount = async(gameId,totalAmountBySelection)=>{
+    try {
+
+        const gameIds = gameId;
+        const winner = totalAmountBySelection.winner;
+        console.log(gameIds,winner)
+        const userList =  await ParticipantsUser.find({gameId:gameIds})
+        console.log('userList',userList)
+    //     const user = await User.findOne({ email });
+    //     if (!user) {
+    //       return next(createError(404,"User not Found"));
+    //     }
+    //     const wallet = await Wallet.findOne({ _id: user.wallet });
+    //     if (!wallet) {
+    //       return next(createError(404,"Wallet not Found"));
+    //     }
+    //         wallet.wallet.balance -= amount;
+    //         wallet.wallet.transactions.push({
+    //             amount,
+    //             type: 'gamePlay',
+    //             approved: true
+    //         });
+    //          // Save the updated wallet
+    //    await wallet.save();
+    //    return next(createSuccess(200,"'Balance Deduction successfully'"));
+      } catch (error) {
+        console.log(error)
+        return next(createError(500,"Internal Server Error!"));
+      }
+  };
 
 //end of getParticipantUserGroupedDataWithDetailsAndAmountPut
 
