@@ -23,6 +23,10 @@ const gameSchema = mongoose.Schema(
             type:String,
             required:true
         },
+        color:{
+            type:String,
+            required:true
+        },
         earning:{
             type:String,
             required:true

@@ -16,19 +16,9 @@ const UserSchema = mongoose.Schema(
             required: true,
             unique: true
         },
-        userName: {
-            type: String,
-            required: true,
-            unique: true
-        },
         password: {
             type: String,
             required: true
-        },
-        emailStatus:{
-            type :String,
-            required:true,
-            default: "unverified"
         },
         recommendationCode: {
             type: String,
@@ -50,6 +40,10 @@ const UserSchema = mongoose.Schema(
             type: [Schema.Types.ObjectId],
             required: true,
             ref: 'Role'
+        },
+        wallet: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Wallet'
         }
     },
     {

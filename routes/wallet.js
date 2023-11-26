@@ -1,18 +1,21 @@
 
 import express from "express";
-import { Deposit, withdrawal, balance, transactions } from "../controllers/wallet.controller.js";
+import { Deposit, withdrawal, balance, transactions, deducteAmount } from "../controllers/wallet.controller.js";
 
 const router =express.Router();
 // Deposit route
 router.post('/deposit',Deposit);
 
 // Withdrawal route
-router.post('/withdraw',withdrawal);
+router.post('/withdrawal',withdrawal);
 
 // Get balance route
-router.get('/balance', balance);
+router.post('/balance', balance);
 
 // Get transaction history route
-router.get('/transactions',transactions);
+router.post('/transactions',transactions);
+
+//deductionamount on game play
+router.post('/deduction',deducteAmount)
 
 export default router;

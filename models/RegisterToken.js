@@ -1,13 +1,11 @@
 import mongoose, { Schema } from "mongoose";
-
-const TokenSchema = mongoose.Schema(
+const  RegisterTokenSchema = mongoose.Schema(
     {
-        userId:{
-            type:Schema.Types.ObjectId,
+       email:{
+            type:String,
             required:true,
-            ref:"User"
         },
-        token:{
+        VerificationCode:{
             type: String,
             required: true
         },
@@ -15,8 +13,11 @@ const TokenSchema = mongoose.Schema(
             type:Date,
             default:Date.now,
             expires:300
+        },
+        isVerified:{
+            type:Boolean
         }
     }
 );
 
-export default mongoose.model("Token",TokenSchema);
+export default mongoose.model("RegisterToken",RegisterTokenSchema);
