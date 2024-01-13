@@ -4,6 +4,7 @@ import GameResult from '../models/gameResult.js';
 import { createError } from '../utills/error.js';
 import { createSuccess } from '../utills/success.js';
 import User from "../models/User.js";
+import wallet from '../models/wallet.js';
 
 export const participantUser = async (req, res, next) => {
     const gameId = req.body.gameId;
@@ -69,7 +70,7 @@ export const getParticipantUserGroupedDataWithDetailsAndAmountPut = async (req, 
     const gameEarning = calculateEarning(totalAmountBySelection,totalAmountcollectinAGame);
     const participantUsercount = gameData.length;
     const insertGameDatas=insertGameData(gameId,participantUsercount,totalAmountBySelection, totalAmountcollectinAGame,gameEarning)
-    const AddWinningAmounts = AddWinningAmount(gameId,totalAmountBySelection)
+    // const AddWinningAmounts = AddWinningAmount()
 
     return next(createSuccess(200, "All process done"));
 };
@@ -146,8 +147,10 @@ export const calculateTotalAmountBySelection = (gameId, groupedData) => {
             adjustedTotalAmount += selectionTen;
         } else if (selection === 2 || selection === 4 || selection === 6 || selection === 8) {
             adjustedTotalAmount += selectionTwelve;
-        } else if (selection === 0 || selection === 5) {
-            adjustedTotalAmount += selectionEleven;
+        } else if (selection === 0 ) {
+            adjustedTotalAmount += (selectionTen + selectionTen);
+        }else if(selection === 5){
+            adjustedTotalAmount += (selectionTwelve + selectionEleven)
         }
 
         totalAmountBySelection[selection] = adjustedTotalAmount;
@@ -257,36 +260,153 @@ const insertGameData = async (gameId, participantUsercount, totalAmountBySelecti
     }
 };
 
-export const AddWinningAmount = async(gameId,totalAmountBySelection)=>{
+export const AddWinningAmount = async()=>{
     try {
 
-        const gameIds = gameId;
-        const winner = totalAmountBySelection.winner;
-        console.log(gameIds,winner)
-        const userList =  await ParticipantsUser.find({gameId:gameIds})
-        console.log('userList',userList)
-    //     const user = await User.findOne({ email });
-    //     if (!user) {
-    //       return next(createError(404,"User not Found"));
-    //     }
-    //     const wallet = await Wallet.findOne({ _id: user.wallet });
-    //     if (!wallet) {
-    //       return next(createError(404,"Wallet not Found"));
-    //     }
-    //         wallet.wallet.balance -= amount;
-    //         wallet.wallet.transactions.push({
-    //             amount,
-    //             type: 'gamePlay',
-    //             approved: true
-    //         });
-    //          // Save the updated wallet
-    //    await wallet.save();
-    //    return next(createSuccess(200,"'Balance Deduction successfully'"));
+        const gameIds = 2023123000002;
+        const winner = 1;
+        if(winner === 1 || winner === 3 || winner === 7 || winner === 9){
+          const userList =  await ParticipantsUser.find({gameId:gameIds,  selection: { $in: [winner, 11] }})
+          const usernamesAndAmounts = userList.map(user => ({ username: user.username, amountput: user.amountput, selection: user.selection }));
+          console.log(usernamesAndAmounts)
+          for(const userRecord of usernamesAndAmounts){
+            const email = userRecord.username;
+            const user = await User.findOne({ email });
+            
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+              }
+          
+              const Wallet = await wallet.findOne({ _id: user.wallet});
+      
+              if (!Wallet) {
+                return res.status(404).json({ message: 'Wallet not found' });
+              }
+            let amount = 0;
+            user.selection===11 ?amount = userRecord.amountput*2 :amount = userRecord.amountput*9
+            console.log('amount', amount)
+            Wallet.wallet.balance += amount;
+
+            Wallet.wallet.transactions.push({
+                amount,
+                type: 'Gamewin',
+                approved: true
+            });
+            await Wallet.save();
+          }
+          
+        }
+        else if(winner === 2 || winner === 4 || winner === 6 || winner === 8){
+            const userList =  await ParticipantsUser.find({gameId:gameIds,  selection: { $in: [winner, 13] }})
+            const usernamesAndAmounts = userList.map(user => ({ username: user.username, amountput: user.amountput, selection: user.selection }));
+            console.log(usernamesAndAmounts)
+            for(const userRecord of usernamesAndAmounts){
+              const email = userRecord.username;
+              const user = await User.findOne({ email });
+              
+              if (!user) {
+                  return res.status(404).json({ message: 'User not found' });
+                }
+            
+                const Wallet = await wallet.findOne({ _id: user.wallet});
+        
+                if (!Wallet) {
+                  return res.status(404).json({ message: 'Wallet not found' });
+                }
+              let amount = 0;
+              user.selection===11 ?amount = userRecord.amountput*2 :amount = userRecord.amountput*9
+              console.log('amount', amount)
+              Wallet.wallet.balance += amount;
+  
+              Wallet.wallet.transactions.push({
+                  amount,
+                  type: 'Gamewin',
+                  approved: true
+              });
+              await Wallet.save();
+            }
+        }
+        else if(winner === 0){
+            const userList =  await ParticipantsUser.find({gameId:gameIds,  selection: { $in: [winner,11, 12] }})
+            const usernamesAndAmounts = userList.map(user => ({ username: user.username, amountput: user.amountput, selection: user.selection }));
+            console.log(usernamesAndAmounts)
+            for(const userRecord of usernamesAndAmounts){
+              const email = userRecord.username;
+              const user = await User.findOne({ email });
+              
+              if (!user) {
+                  return res.status(404).json({ message: 'User not found' });
+                }
+            
+                const Wallet = await wallet.findOne({ _id: user.wallet});
+        
+                if (!Wallet) {
+                  return res.status(404).json({ message: 'Wallet not found' });
+                }
+              let amount = 0;
+              if(selection==11){
+                amount = userRecord.amountput*1.5
+              }else if(selection==12){
+                amount = userRecord.amountput*4.5
+              }else{
+                amount = userRecord.amountput*9
+              }
+              console.log('amount', amount)
+              Wallet.wallet.balance += amount;
+  
+              Wallet.wallet.transactions.push({
+                  amount,
+                  type: 'Gamewin',
+                  approved: true
+              });
+              await Wallet.save();
+            }
+        }else if(winner === 5){ 
+            const userList =  await ParticipantsUser.find({gameId:gameIds,  selection: { $in: [winner,12,13] }})
+            const usernamesAndAmounts = userList.map(user => ({ username: user.username, amountput: user.amountput, selection: user.selection }));
+            console.log(usernamesAndAmounts)
+            for(const userRecord of usernamesAndAmounts){
+              const email = userRecord.username;
+              const user = await User.findOne({ email });
+              
+              if (!user) {
+                  return res.status(404).json({ message: 'User not found' });
+                }
+            
+                const Wallet = await wallet.findOne({ _id: user.wallet});
+        
+                if (!Wallet) {
+                  return res.status(404).json({ message: 'Wallet not found' });
+                }
+              let amount = 0;
+              if(selection==11){
+                amount = userRecord.amountput*1.5
+              }else if(selection==12){
+                amount = userRecord.amountput*4.5
+              }else{
+                amount = userRecord.amountput*9
+              }
+              console.log('amount', amount)
+              Wallet.wallet.balance += amount;
+  
+              Wallet.wallet.transactions.push({
+                  amount,
+                  type: 'Gamewin',
+                  approved: true
+              });
+              await Wallet.save();
+            }
+        }
       } catch (error) {
         console.log(error)
-        return next(createError(500,"Internal Server Error!"));
+        // return res.status(500).json({ message: 'Internal server error' });
       }
   };
 
+  const calculateWinningAmount = (amountput, totalAmountBySelection) => {
+    // Implement the logic to calculate winning amount based on the user's input and total amount
+    // You may use your own calculation formula here
+    return /* calculated amount */;
+};
 //end of getParticipantUserGroupedDataWithDetailsAndAmountPut
 
