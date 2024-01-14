@@ -14,13 +14,6 @@ class CountdownService {
     this.gameIdSubject = new BehaviorSubject('');
     this.generateGameId();
     
-
-    // // Connect to the WebSocket server
-    // this.socket = io('http://localhost:3000');
-    // this.socket.on('hello', (arg) => {
-    //   console.log(arg);
-    // });
-
     this.startCountdown(10); // Start a 2-minute countdown when the service is created
   }
 
