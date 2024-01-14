@@ -15,7 +15,7 @@ export const register = async (req,res,next)=>{
     const user = await User.findOne({email: req.body.email}).populate("roles","role")
     const hashpassword = await bcrypt.hash(req.body.password,salt);
     if(!user){
-        const newWallet = new wallet({
+        const newWallet = await new wallet({
             email: req.body.email,
             balance: 0,
             transactions: []
@@ -44,20 +44,15 @@ export const login = async (req,res, next)=>{
     try{
         const user = await User.findOne({email: req.body.email}).populate("roles","role");
         const {roles} = user;
-        console.log(user)
         if(!user){
             return next(createError(400,"User not found!"))
         }
         const isPasswordCorrect = await bcrypt.compare(req.body.password, user.password);
-        console.log(isPasswordCorrect);
         if(!isPasswordCorrect){
             return next(createError(400, "Password is Incorrect"))
         }
-        // if(user.emailStatus === 'unverified'){
-        //     return next(createError(400, "Email is not verfied  yet"))
-        // }
         const token =jwt.sign(
-            {id:user._id, isAdmin:user.isAdmin, roles:roles},
+            {id:user._id, email:user.email, isAdmin:user.isAdmin, roles:roles},
             process.env.JWT_SECRET  
         )
         res.cookie("access_token",token, {httpOnly: true})

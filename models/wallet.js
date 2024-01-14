@@ -7,7 +7,7 @@ const transactionSchema =  mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['deposit', 'withdrawal', 'gamePlay'],
+        enum: ['deposit', 'withdrawal', 'gamePlay','Gamewin'],
         required: true
     },
     approved: {
@@ -17,6 +17,12 @@ const transactionSchema =  mongoose.Schema({
     date: {
         type: Date,
         default: Date.now
+    },
+    transactionId: {
+        type: String,
+    },
+    utrNumber: {
+        type:String,
     }
 });
 

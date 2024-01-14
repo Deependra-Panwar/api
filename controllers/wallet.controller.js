@@ -5,7 +5,7 @@ import { createSuccess } from "../utills/success.js";
 
 export const Deposit = async(req, res, next)=>{
   try {
-    const { email, amount } = req.body;
+    const { email, amount, transactionId , utrNumber } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
         return res.status(404).json({ message: 'User not found' });
@@ -20,7 +20,9 @@ export const Deposit = async(req, res, next)=>{
             wallet.wallet.transactions.push({
                 amount,
                 type: 'deposit',
-                approved: false
+                approved: false,
+                transactionId,
+                utrNumber
             });
     // Save the updated wallet
    await wallet.save();
